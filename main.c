@@ -288,7 +288,7 @@ void main(void){
                 balances_todos(&tamano);
                 break;
             case 3:
-                exit(0);1
+                exit(0);
             }
         }
         else{
