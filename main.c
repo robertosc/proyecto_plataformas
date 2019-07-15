@@ -19,10 +19,11 @@
 
 //MENÚ
 enum opciones_e{
-    oper_transaccion = 1,
-    oper_deposito = 2,
-    oper_movimientos = 3,
-    oper_salir = 4,
+    oper_balance_total = 1,
+    oper_transaccion = 2,
+    oper_deposito = 3,
+    oper_movimientos = 4,
+    oper_salir = 5,
     oper_max
 };
 
@@ -32,6 +33,7 @@ typedef struct opciones_s{
 }opciones_t;
 
 opciones_t opciones[oper_max] = {
+    {.opciones = oper_balance_total, .texto = "Mostrar mi balance actual."},
     {.opciones = oper_transaccion, .texto = "Depositar o retirar dinero de mi cuenta."},
     {.opciones = oper_deposito, .texto = "Depositar dinero a alguien más"},
     {.opciones = oper_movimientos, .texto = "Mostrar mis movimientos de dinero"},
@@ -70,7 +72,7 @@ typedef struct balance_s{
     float transaccion;
 }balance_t;
 
-int balance(balance_t**tamano){
+int balances_todos(balance_t**tamano){
     int num_balances = NUM_BALANCES;
     balance_t balance[num_balances];
 
@@ -90,8 +92,8 @@ int balance(balance_t**tamano){
 }
 
 
-//TRANSACCIONES DE UN USUARIO ESPECÍFICO
-int balance_total(balance_t**tamano, int no_tarjeta1){
+//MOVIMINETOS DE UN USUARIO ESPECÍFICO
+int balance(balance_t**tamano, int no_tarjeta1){
     int num_balances = NUM_BALANCES;
     balance_t balance[num_balances];
 
@@ -115,6 +117,36 @@ int balance_total(balance_t**tamano, int no_tarjeta1){
     printf("\n");
     rewind(f_p);
 }
+
+//FUNCIÓN PARA MOSTRAR BALANCE TOTAL
+float total = 0;
+
+int balance_total(balance_t**tamano, int no_tarjeta1){
+    int num_balances = NUM_BALANCES;
+    balance_t balance[num_balances];
+
+    //char buffer_b[len_buffer];
+    *tamano = (balance_t*) malloc(num_balances * sizeof(balance_t));
+
+    FILE *f_p = fopen(F_BALANCES, "r");
+    //memset(buffer_b, 0, sizeof(char *len_buffer);
+    printf("\nActualmente su cuenta tiene: \n");
+    for(int i; i < NUM_BALANCES ; i++){
+        
+        int var = fscanf(f_p, "%[^,], %[^,], %f", balance[i].nombre, balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
+
+        if(atoi(balance[i].no_tarjeta) == no_tarjeta1){
+            total = total + balance[i].transaccion;
+        }
+
+
+        //printf("%s, %.2f", balance[i].no_tarjeta, balance[i].transaccion);
+    }
+    printf("%.2f", total);
+    printf("\n");
+    rewind(f_p);
+}
+
 
 
 //FUNCION DE INGRESO
@@ -196,10 +228,40 @@ void movimiento(int no_tarjeta){
     }
 }
 
+//FUNCIÓN PARA DEPOSITARLE DINERO A ALGUIEN MAS
+void deposito(void){
+    float monto = 0;
+    char nombre[30];
+    char tarjeta[30];
+
+    printf("Ingrese el número de tarjeta de la persona a la que desea depositar dinero:  ");
+    scanf("%s", tarjeta);
+    
+    printf("Ingrese el monto que desea depositar:  ");
+    scanf("%f", &monto);
+
+    printf("Ingrese su nombre sin espacios:  ");
+    scanf("%s", nombre);
+
+    FILE *fp_movimientos = fopen(F_BALANCES, "a");
+    if(monto > 0){
+        if(fp_movimientos == NULL){
+            printf("No se puede acceder al archivo. \n");
+        }
+        else{
+            fprintf(fp_movimientos, "%s,%s,%.2f\n", nombre, tarjeta, monto);
+        }
+    }
+    else{
+        printf("El monto a depositar debe ser una cantidad positiva.\n");
+    }
+}
+
 
 void main(void){
     int opcion = 0;
     int no_tarjeta = ingreso();
+    balance_t *tamano = NULL;
 
     printf("Su número de tarjeta es: %d\n\n", no_tarjeta);
     
@@ -210,18 +272,28 @@ void main(void){
     
     }
 
-    printf("Seleccione qué desea hacer: ");
+    printf("\nSeleccione qué desea hacer-> ");
     scanf("%d", &opcion);
 
 
     switch (opcion){
+
+    case oper_balance_total:
+        balance_total(&tamano, no_tarjeta);
+
+
     case oper_transaccion:
-        printf("Ha seleccionado la opción de realizar una transacción.\n");
-        movimiento();
+        printf("\nHa seleccionado la opción de realizar una transacción.\n");
+        movimiento(no_tarjeta);
         break;
+
     case oper_deposito:
-        printf("Ha seleccionado la opción de realizar un depósito a alguien más. \n")
-        
+        printf("\nHa seleccionado la opción de realizar un depósito a alguien más. \n");
+        deposito();
+        break;
+    
+    case oper_movimientos:
+    
         break;
     }
 

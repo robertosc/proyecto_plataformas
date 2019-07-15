@@ -19,7 +19,7 @@ typedef struct balance_s{
 
 
 
-int balance(balance_t**tamano){
+int balances_todos(balance_t**tamano){
     int num_balances = NUM_BALANCES;
     balance_t balance[num_balances];
 
