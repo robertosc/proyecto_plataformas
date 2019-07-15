@@ -16,6 +16,7 @@
 #define LEN_PASSWD 512
 #define NUM_BALANCES 20
 
+#define CONTRASENA_ADMINISTRADOR "IngresoAdmin"
 
 //MENÚ
 enum opciones_e{
@@ -42,8 +43,8 @@ opciones_t opciones[oper_max] = {
 
 
 //FUNCION CONTAR LÍNEAS
-int countlines(void){   //Se puede poner como argumento "char*filename" para hacer la función más general 
-    FILE *fp = fopen(F_BALANCES, "r");
+int countlines(char*nombre_archivo){   //Se puede poner como argumento "char*filename" para hacer la función más general 
+    FILE *fp = fopen(nombre_archivo, "r");
     char reader;
     int counter = 0;
 
@@ -73,7 +74,7 @@ typedef struct balance_s{
 }balance_t;
 
 int balances_todos(balance_t**tamano){
-    int num_balances = NUM_BALANCES;
+    int num_balances = countlines(F_BALANCES) + 1;
     balance_t balance[num_balances];
 
     //char buffer_b[len_buffer];
@@ -92,7 +93,7 @@ int balances_todos(balance_t**tamano){
 }
 
 
-//MOVIMINETOS DE UN USUARIO ESPECÍFICO
+//MOVIMIENTOS DE UN USUARIO ESPECÍFICO
 int balance(balance_t**tamano, int no_tarjeta1){
     int num_balances = NUM_BALANCES;
     balance_t balance[num_balances];
@@ -260,42 +261,84 @@ void deposito(void){
 
 void main(void){
     int opcion = 0;
-    int no_tarjeta = ingreso();
+    int ingreso_inicial = 0;
+
+    char contrasena[LEN_PASSWD];
+
     balance_t *tamano = NULL;
+    
+    printf("Desea ingresar como:\n1. Cliente\n2. Administrador\nOpción -> ");
+    scanf("%d", &ingreso_inicial);
 
-    printf("Su número de tarjeta es: %d\n\n", no_tarjeta);
     
 
-    for (int i = 0; i < oper_max -1 ; i++){
+    if(ingreso_inicial == 2){
+        printf("Ingrese la contraseña de administrador: ");
+        scanf("%s", contrasena);
 
-        printf("%d. %s \n", (opciones[i].opciones), opciones[i].texto);
-    
+        if(!strcmp(CONTRASENA_ADMINISTRADOR, contrasena)){
+            printf("Opciones de administrador:\n1. Mostrar todos los usuarios e información.\n2. Mostrar todos los movimientos.");
+            int op_admin = 0;
+            scanf("%d", &op_admin);
+            switch (op_admin){
+            case 1:
+                //balances_todos(&tamano);
+                break;
+            case 2:
+                balances_todos(&tamano);
+                break;
+            case 3:
+                exit(0);1
+            }
+        }
+        else{
+            printf("Contraseña incorrecta");
+        }
     }
 
-    printf("\nSeleccione qué desea hacer-> ");
-    scanf("%d", &opcion);
-
-
-    switch (opcion){
-
-    case oper_balance_total:
-        balance_total(&tamano, no_tarjeta);
-
-
-    case oper_transaccion:
-        printf("\nHa seleccionado la opción de realizar una transacción.\n");
-        movimiento(no_tarjeta);
-        break;
-
-    case oper_deposito:
-        printf("\nHa seleccionado la opción de realizar un depósito a alguien más. \n");
-        deposito();
-        break;
+    else if (ingreso_inicial == 1){
     
-    case oper_movimientos:
-    
-        break;
+        int no_tarjeta = ingreso();
+
+        printf("Su número de tarjeta es: %d\n\n", no_tarjeta);
+
+
+        for (int i = 0; i < oper_max -1 ; i++){
+
+            printf("%d. %s \n", (opciones[i].opciones), opciones[i].texto);
+
+        }
+
+        printf("\nSeleccione qué desea hacer-> ");
+        scanf("%d", &opcion);
+
+
+        switch (opcion){
+
+        case oper_balance_total:
+            balance_total(&tamano, no_tarjeta);
+            break;
+
+
+        case oper_transaccion:
+            printf("\nHa seleccionado la opción de realizar una transacción.\n");
+            movimiento(no_tarjeta);
+            break;
+
+        case oper_deposito:
+            printf("\nHa seleccionado la opción de realizar un depósito a alguien más. \n");
+            deposito();
+            break;
+
+        case oper_movimientos:
+            balance(&tamano, no_tarjeta);
+            break;
+
+        case oper_salir:
+            printf("Gracias por preferirnos. :)");
+            exit(0);
+            break;
+        }
+
     }
-
-
-}
+}   
