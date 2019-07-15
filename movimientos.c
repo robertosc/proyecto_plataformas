@@ -18,7 +18,7 @@ typedef struct balance_s{
 
 
 
-int balance(balance_t**tamano){
+int balance(balance_t**tamano, int no_tarjeta1){
     int num_balances = NUM_BALANCES;
     balance_t balance[num_balances];
 
@@ -31,7 +31,12 @@ int balance(balance_t**tamano){
         
         int var = fscanf(f_p, "%[^,], %f", balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
         
-        printf("%s, %.2f", balance[i].no_tarjeta, balance[i].transaccion);
+        if(atoi(balance[i].no_tarjeta) == no_tarjeta1){
+            printf("%s, %.2f", balance[i].no_tarjeta, balance[i].transaccion);
+        }
+
+
+        //printf("%s, %.2f", balance[i].no_tarjeta, balance[i].transaccion);
     }
 
     rewind(f_p);
@@ -39,8 +44,5 @@ int balance(balance_t**tamano){
 
 void main(){
     balance_t *tamano = NULL;
-    balance(&tamano);
+    balance(&tamano, 198763);
 }
-
-
-//usar rewind(fp);

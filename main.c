@@ -40,8 +40,8 @@ opciones_t opciones[oper_max] = {
 
 
 //FUNCION CONTAR LÍNEAS
-int countlines(char*filename){
-    FILE *fp = fopen(filename, "r");
+int countlines(void){   //Se puede poner como argumento "char*filename" para hacer la función más general 
+    FILE *fp = fopen(F_BALANCES, "r");
     char reader;
     int counter = 0;
 
@@ -79,9 +79,14 @@ int balance(balance_t**tamano){
     FILE *f_p = fopen(F_INFO, "r");
     //memset(buffer_b, 0, sizeof(char *len_buffer);
     for(int i; i < NUM_BALANCES ; i++){
+        
         int var = fscanf(f_p, "%[^,], %f", balance[i].nombre, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
+        
         printf("%s, %.2f", balance[i].nombre, balance[i].transaccion);
     }
+
+    rewind(f_p);
+
 }
 
 

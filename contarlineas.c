@@ -5,8 +5,8 @@
 
 #define F_BALANCES "balance.csv"
 
-int countlines(char*filename){
-    FILE *fp = fopen(filename, "r");
+int countlines(void){  //Se puede poner como argumento "char*filename" para hacer la función más general
+    FILE *fp = fopen(F_BALANCES, "r");
     char reader;
     int counter = 0;
 
@@ -29,6 +29,6 @@ int countlines(char*filename){
 }
 
 int main(){
-    int a = countlines(F_BALANCES);
+    int a = countlines();
     printf("%d", a);
 }
