@@ -12,7 +12,8 @@
 
 
 typedef struct balance_s{
-    char no_tarjeta[100];
+    char nombre[30];
+    char no_tarjeta[30];
     float transaccion;
 }balance_t;
 
@@ -27,18 +28,19 @@ int balance(balance_t**tamano, int no_tarjeta1){
 
     FILE *f_p = fopen(F_BALANCES, "r");
     //memset(buffer_b, 0, sizeof(char *len_buffer);
+    printf("Estos son los movimientos de su cuenta: \n");
     for(int i; i < NUM_BALANCES ; i++){
         
-        int var = fscanf(f_p, "%[^,], %f", balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
-        
+        int var = fscanf(f_p, "%[^,], %[^,], %f", balance[i].nombre, balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
+
         if(atoi(balance[i].no_tarjeta) == no_tarjeta1){
-            printf("%s, %.2f", balance[i].no_tarjeta, balance[i].transaccion);
+            printf("%s -> %.2f", balance[i].nombre, balance[i].transaccion);
         }
 
 
         //printf("%s, %.2f", balance[i].no_tarjeta, balance[i].transaccion);
     }
-
+    printf("\n");
     rewind(f_p);
 }
 

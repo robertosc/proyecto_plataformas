@@ -1,8 +1,8 @@
-Usuario,Transaccion
-000000, 0
-198763,1000
-789563,-400
-198763,30000
-983647,-50000
-789563,3000
-198763,-10000
+Usuario,No. Tarjeta,Transaccion
+0,0,0
+Roberto Sanchez,198763,1000
+Jeremy Caldwell,789563,-400
+Roberto Sanchez,198763,30000
+Lebron James,983647,-50000
+Jeremy Caldwell,789563,3000
+Roberto Sanchez,198763,-10000
