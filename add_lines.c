@@ -6,18 +6,21 @@
 
 void movimiento(int no_tarjeta){
     float monto = 0;
+    char nombre[30];
 
     printf("Ingrese el monto que desea mover:  ");
     scanf("%f", &monto);
+
+    printf("Ingrese su nombre sin espacios:  ");
+    scanf("%s", nombre);
 
     FILE *fp_movimientos = fopen(F_BALANCES, "a");
     
     if(fp_movimientos == NULL){
         printf("No se puede acceder al archivo. \n");
     }
-    
     else{
-        fprintf(fp_movimientos, "%d,%f\n", no_tarjeta, monto);
+        fprintf(fp_movimientos, "%s,%d,%.2f\n", nombre, no_tarjeta, monto);
     }
 }
 

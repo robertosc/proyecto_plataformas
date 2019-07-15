@@ -36,6 +36,8 @@ int ingreso(void){
         printf("Ingrese su número de pin:  ");
         scanf("%s", pin);
         
+        printf("\n");
+
         while(!usuario[0].encontrado && fgets(buffer, LEN_BUFFER, fp_usuarios) != NULL){
             int j= 0;
 

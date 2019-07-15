@@ -19,8 +19,8 @@
 
 //MENÚ
 enum opciones_e{
-    oper_sacar = 1,
-    oper_deposit = 2,
+    oper_transaccion = 1,
+    oper_deposito = 2,
     oper_movimientos = 3,
     oper_salir = 4,
     oper_max
@@ -32,8 +32,8 @@ typedef struct opciones_s{
 }opciones_t;
 
 opciones_t opciones[oper_max] = {
-    {.opciones = oper_sacar, .texto = "Retirar dinero de mi cuenta."},
-    {.opciones = oper_deposit, .texto = "Depositar dinero a mi cuenta"},
+    {.opciones = oper_transaccion, .texto = "Depositar o retirar dinero de mi cuenta."},
+    {.opciones = oper_deposito, .texto = "Depositar dinero a alguien más"},
     {.opciones = oper_movimientos, .texto = "Mostrar mis movimientos de dinero"},
     {.opciones = oper_salir, .texto = "Salir de mi cuenta."}
 };
@@ -63,30 +63,57 @@ int countlines(void){   //Se puede poner como argumento "char*filename" para hac
     return counter;
 }
 
-//LECTURA DE TRANSACCIONES
+//LECTURA DE TODAAS LAS TRANSACCIONES
 typedef struct balance_s{
-    char nombre[100];
+    char nombre[30];
+    char no_tarjeta[30];
     float transaccion;
 }balance_t;
 
 int balance(balance_t**tamano){
-    int num_balances = NUM_BALANCES;   //MODIFICAR PARA USAR CON FUNCION CONTAR LINEAS
+    int num_balances = NUM_BALANCES;
     balance_t balance[num_balances];
 
     //char buffer_b[len_buffer];
     *tamano = (balance_t*) malloc(num_balances * sizeof(balance_t));
 
-    FILE *f_p = fopen(F_INFO, "r");
+    FILE *f_p = fopen(F_BALANCES, "r");
     //memset(buffer_b, 0, sizeof(char *len_buffer);
     for(int i; i < NUM_BALANCES ; i++){
         
-        int var = fscanf(f_p, "%[^,], %f", balance[i].nombre, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
+        int var = fscanf(f_p, "%[^,], %[^,], %f", balance[i].nombre, balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
         
-        printf("%s, %.2f", balance[i].nombre, balance[i].transaccion);
+        printf("%s, %s, %.2f",balance[i].nombre, balance[i].no_tarjeta, balance[i].transaccion);
     }
 
     rewind(f_p);
+}
 
+
+//TRANSACCIONES DE UN USUARIO ESPECÍFICO
+int balance_total(balance_t**tamano, int no_tarjeta1){
+    int num_balances = NUM_BALANCES;
+    balance_t balance[num_balances];
+
+    //char buffer_b[len_buffer];
+    *tamano = (balance_t*) malloc(num_balances * sizeof(balance_t));
+
+    FILE *f_p = fopen(F_BALANCES, "r");
+    //memset(buffer_b, 0, sizeof(char *len_buffer);
+    printf("Estos son los movimientos de su cuenta: \n");
+    for(int i; i < NUM_BALANCES ; i++){
+        
+        int var = fscanf(f_p, "%[^,], %[^,], %f", balance[i].nombre, balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
+
+        if(atoi(balance[i].no_tarjeta) == no_tarjeta1){
+            printf("%s -> %.2f", balance[i].nombre, balance[i].transaccion);
+        }
+
+
+        //printf("%s, %.2f", balance[i].no_tarjeta, balance[i].transaccion);
+    }
+    printf("\n");
+    rewind(f_p);
 }
 
 
@@ -171,12 +198,32 @@ void movimiento(int no_tarjeta){
 
 
 void main(void){
+    int opcion = 0;
     int no_tarjeta = ingreso();
 
     printf("Su número de tarjeta es: %d\n\n", no_tarjeta);
     
-    printf("Seleccione qué desea hacer: \n");
+
     for (int i = 0; i < oper_max -1 ; i++){
+
         printf("%d. %s \n", (opciones[i].opciones), opciones[i].texto);
+    
     }
+
+    printf("Seleccione qué desea hacer: ");
+    scanf("%d", &opcion);
+
+
+    switch (opcion){
+    case oper_transaccion:
+        printf("Ha seleccionado la opción de realizar una transacción.\n");
+        movimiento();
+        break;
+    case oper_deposito:
+        printf("Ha seleccionado la opción de realizar un depósito a alguien más. \n")
+        
+        break;
+    }
+
+
 }
