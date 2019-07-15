@@ -1,7 +1,7 @@
-Usuario,No. tarjeta,PIN
-Roberto Sanchez,198763,1234
-Jeremy Caldwell,789563,3672
-Andrés Ramírez,126370,9283
-Sophia Cordero,928273,9736
-Carlos Sanchez,102934,1263
-Lebron James,983647,2323
+Usuario,No. tarjeta,PIN,Actividad
+Roberto Sanchez,198763,1234,activo
+Jeremy Caldwell,789563,3672,activo
+Andrés Ramírez,126370,9283,activo
+Sophia Cordero,928273,9736,activo
+Carlos Sanchez,102934,1263,inactivo
+Lebron James,983647,2323,activo
