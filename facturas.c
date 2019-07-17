@@ -59,24 +59,6 @@ int countlines(void){  //Se puede poner como argumento "char*filename" para hace
     return counter + 1;
 }
 
-int balances_todos(balance_t**tamano){  //HACER CAMBIOS EN EL MAIN
-    int num_balances = countlines();
-    balance_t balance[num_balances];
-
-    //char buffer_b[len_buffer];
-    *tamano = (balance_t*) malloc(num_balances * sizeof(balance_t));
-
-    FILE *f_p = fopen(F_BALANCES, "r");
-    //memset(buffer_b, 0, sizeof(char *len_buffer);
-    for(int i; i < num_balances ; i++){
-        
-        int var = fscanf(f_p, "%[^,], %[^,], %f", balance[i].nombre, balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
-        
-        printf("%s, %s, %.2f",balance[i].nombre, balance[i].no_tarjeta, balance[i].transaccion);
-    }
-
-    rewind(f_p);
-}
 
 typedef struct usuarios_s{
     char nombre[LEN_NOMBRE];
@@ -86,26 +68,35 @@ typedef struct usuarios_s{
     int encontrado;
 }usuarios_t;
 
-int estado_cuenta(int no_tarejeta3, float balance_total){
-    usuarios_t usuario[NUM_USUARIOS];
+typedef struct balance_estado_s{
+    char nombre[LEN_NOMBRE];
+    char no_tarjeta[LEN_TARJETA];
+    char transaccion[100];    
+    int encontrado;
+}balance_est_t;
 
-    char archivo_estado[30];
+int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]){
+    usuarios_t usuario[NUM_USUARIOS];
+    balance_est_t balance1[NUM_USUARIOS];
+
+    char monto_final[LEN_BUFFER];
     char *fecha = tiempo(1);
     char *hora = tiempo(2);
     char buffer[LEN_BUFFER];
-
-    printf("Ingrese el nombre con el que desea guardar el estado de cuenta con terminación .txt -> ");
-    scanf("%s", archivo_estado);
-
+    
     FILE *fp_estado = fopen(archivo_estado, "w");
-
-
     FILE *fp_info_usuario = fopen(F_INFO, "r");
+    FILE *fp_balances = fopen(F_BALANCES, "r");
+
     memset(usuario, 0, sizeof(usuarios_t)* NUM_USUARIOS);
+    memset(balance1, 0, sizeof(balance_est_t)* NUM_USUARIOS);
     memset(buffer, 0, sizeof(char)*LEN_BUFFER);
 
+    //PASAMOS BALANCE_TOTAL A STRING CON SPRINTF
+    sprintf(monto_final, "%.3f", balance_total);
+
     //Manejo de errores
-    if((fp_estado == NULL) || (fp_info_usuario == NULL)){
+    if((fp_estado == NULL) || (fp_info_usuario == NULL) || (fp_balances) == NULL){
         printf("Hubo un error con los archivos, contacte con el centro de atención.");
         exit(0);
     }
@@ -119,7 +110,6 @@ int estado_cuenta(int no_tarejeta3, float balance_total){
 
 
     while(!usuario[0].encontrado && fgets(buffer, LEN_BUFFER, fp_info_usuario) != NULL){
-        int j= 0;
 
         char *p_nombre = strtok(buffer, ",");
         char *p_tarjeta = strtok(NULL, ",");
@@ -142,13 +132,42 @@ int estado_cuenta(int no_tarejeta3, float balance_total){
             fputs(usuario->actividad, fp_estado);
         }
     }
-    fclose(fp_estado);
     fclose(fp_info_usuario);
+
+    fputs("\n\t\t\tBalances en la cuenta", fp_estado);
+    fputs("\nDinero disponile en su cuenta: ", fp_estado);
+    fputs(monto_final, fp_estado);
+    
+    //PARTE MOVIMIENTOS DE DINERO, se tuvo que leer el archivo de balances porque la otra manera no funciona con fputs
+    fputs("\n\n\t\t\tTodos los movimmientos realidos:\n", fp_estado);
+    while (!balance1[0].encontrado && fgets(buffer, LEN_BUFFER, fp_balances) != NULL){
+        
+        char *p_nombre_b = strtok(buffer, ",");
+        char *p_no_tarjeta_b = strtok(NULL, ",");
+        char *p_transaccion_b = strtok(NULL, ",");
+
+        strcpy(balance1->nombre, p_nombre_b);
+        strcpy(balance1->no_tarjeta, p_no_tarjeta_b);
+        strcpy(balance1->transaccion, p_transaccion_b);
+
+        if(atoi(p_no_tarjeta_b) == no_tarejeta3){
+            //printf("%s, %s, %s", balance1->nombre, balance1->no_tarjeta, balance1->transaccion);
+            fputs(balance1->nombre, fp_estado); fputs(" -> ", fp_estado);
+            fputs(balance1->transaccion, fp_estado);
+        }
+
+    }
+    fclose(fp_balances);
+    fclose(fp_estado);  //AÑADIR EL FSEEK
 }
 
 
+
 void main(void){
-    estado_cuenta(198763, 10000);
+    char nombre[30];
+    printf("Ingrese el nombre del archivo -> ");
+    scanf("%s", nombre);
+    estado_cuenta(198763, 10000.1, nombre);
 }
 
 /* 
