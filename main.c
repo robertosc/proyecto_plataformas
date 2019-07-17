@@ -120,7 +120,7 @@ int balances_todos(balance_t**tamano){
 
 //MOVIMIENTOS DE UN USUARIO ESPECÍFICO
 int balance(balance_t**tamano, int no_tarjeta1){
-    int num_balances = NUM_BALANCES;
+    int num_balances = countlines(F_BALANCES);
     balance_t balance[num_balances];
 
     //char buffer_b[len_buffer];
@@ -129,7 +129,7 @@ int balance(balance_t**tamano, int no_tarjeta1){
     FILE *f_p = fopen(F_BALANCES, "r");
     //memset(buffer_b, 0, sizeof(char *len_buffer);
     printf("Estos son los movimientos de su cuenta: \n");
-    for(int i; i < NUM_BALANCES ; i++){
+    for(int i; i < num_balances ; i++){
         
         int var = fscanf(f_p, "%[^,], %[^,], %f", balance[i].nombre, balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
 
@@ -148,7 +148,7 @@ int balance(balance_t**tamano, int no_tarjeta1){
 float total = 0;
 
 int balance_total(balance_t**tamano, int no_tarjeta1){
-    int num_balances = NUM_BALANCES;
+    int num_balances = countlines(F_BALANCES);
     balance_t balance[num_balances];
 
     //char buffer_b[len_buffer];
@@ -157,7 +157,7 @@ int balance_total(balance_t**tamano, int no_tarjeta1){
     FILE *f_p = fopen(F_BALANCES, "r");
     //memset(buffer_b, 0, sizeof(char *len_buffer);
     printf("\nActualmente su cuenta tiene: \n");
-    for(int i; i < NUM_BALANCES ; i++){
+    for(int i; i < num_balances ; i++){
         
         int var = fscanf(f_p, "%[^,], %[^,], %f", balance[i].nombre, balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
 
@@ -172,7 +172,6 @@ int balance_total(balance_t**tamano, int no_tarjeta1){
     printf("\n");
     rewind(f_p);
 }
-
 
 
 //FUNCION DE INGRESO
@@ -283,6 +282,104 @@ void deposito(void){
     }
 }
 
+//FUNCIÓN PARA MOSTRAR ESTADOS DE CUENTA
+typedef struct balance_estado_s{
+    char nombre[LEN_NOMBRE];
+    char no_tarjeta[LEN_TARJETA];
+    char transaccion[100];    
+    int encontrado;
+}balance_est_t;
+
+int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]){
+    usuarios_t usuario[NUM_USUARIOS];
+    balance_est_t balance1[NUM_USUARIOS];
+
+    char monto_final[LEN_BUFFER];
+    char *fecha = tiempo(1);
+    char *hora = tiempo(2);
+    char buffer[LEN_BUFFER];
+    
+    FILE *fp_estado = fopen(archivo_estado, "w");
+    FILE *fp_info_usuario = fopen(F_INFO, "r");
+    FILE *fp_balances = fopen(F_BALANCES, "r");
+
+    memset(usuario, 0, sizeof(usuarios_t)* NUM_USUARIOS);
+    memset(balance1, 0, sizeof(balance_est_t)* NUM_USUARIOS);
+    memset(buffer, 0, sizeof(char)*LEN_BUFFER);
+
+    //PASAMOS BALANCE_TOTAL A STRING CON SPRINTF
+    sprintf(monto_final, "%.3f", balance_total);
+
+    //Manejo de errores
+    if((fp_estado == NULL) || (fp_info_usuario == NULL) || (fp_balances) == NULL){
+        printf("Hubo un error con los archivos, contacte con el centro de atención.");
+        exit(0);
+    }
+
+    //Lo que se va a imprimir
+    fputs("\t\t\tEstado de cuenta.\nEmitido el día: ", fp_estado);
+    fputs(fecha, fp_estado); 
+    fputs(" A las: ", fp_estado); 
+    fputs(hora, fp_estado);
+    fputs("\n\n\t\t\tInformación de usuario:\n", fp_estado);
+
+
+    while(!usuario[0].encontrado && fgets(buffer, LEN_BUFFER, fp_info_usuario) != NULL){
+
+        char *p_nombre = strtok(buffer, ",");
+        char *p_tarjeta = strtok(NULL, ",");
+        char *p_pin = strtok(NULL, ",");
+        char *p_actividad = strtok(NULL, ",");
+
+        strcpy(usuario->nombre, p_nombre);
+        strcpy(usuario->tarjeta, p_tarjeta);
+        strcpy(usuario->pin, p_pin);
+        strcpy(usuario->actividad, p_actividad);
+
+        if(atoi(p_tarjeta)== no_tarejeta3){
+            fputs("Nombre: ", fp_estado);
+            fputs(usuario->nombre, fp_estado);
+
+            fputs("\nNúmero de tarjeta: ", fp_estado);
+            fputs(usuario->tarjeta, fp_estado);
+
+            fputs("\nEstado: ", fp_estado);
+            fputs(usuario->actividad, fp_estado);
+        }
+    }
+
+    fputs("\n\t\t\tBalances en la cuenta", fp_estado);
+    fputs("\nDinero disponile en su cuenta: ", fp_estado);
+    fputs(monto_final, fp_estado);
+    
+    //PARTE MOVIMIENTOS DE DINERO, se tuvo que leer el archivo de balances porque la otra manera no funciona con fputs
+    fputs("\n\n\t\t\tTodos los movimmientos realidos:\n", fp_estado);
+    while (!balance1[0].encontrado && fgets(buffer, LEN_BUFFER, fp_balances) != NULL){
+        
+        char *p_nombre_b = strtok(buffer, ",");
+        char *p_no_tarjeta_b = strtok(NULL, ",");
+        char *p_transaccion_b = strtok(NULL, ",");
+
+        strcpy(balance1->nombre, p_nombre_b);
+        strcpy(balance1->no_tarjeta, p_no_tarjeta_b);
+        strcpy(balance1->transaccion, p_transaccion_b);
+
+        if(atoi(p_no_tarjeta_b) == no_tarejeta3){
+            //printf("%s, %s, %s", balance1->nombre, balance1->no_tarjeta, balance1->transaccion);
+            fputs(balance1->nombre, fp_estado); 
+            fputs(" -> ", fp_estado);
+            fputs(balance1->transaccion, fp_estado);
+        }
+
+    }
+    fseek(fp_balances, 0, SEEK_SET);
+    fseek(fp_estado, 0, SEEK_SET);
+    fseek(fp_info_usuario, 0, SEEK_SET);
+
+    fclose(fp_info_usuario);
+    fclose(fp_balances);
+    fclose(fp_estado);  
+}
 
 void main(void){
     int opcion = 0;

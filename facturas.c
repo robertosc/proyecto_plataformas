@@ -132,7 +132,6 @@ int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]
             fputs(usuario->actividad, fp_estado);
         }
     }
-    fclose(fp_info_usuario);
 
     fputs("\n\t\t\tBalances en la cuenta", fp_estado);
     fputs("\nDinero disponile en su cuenta: ", fp_estado);
@@ -152,13 +151,19 @@ int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]
 
         if(atoi(p_no_tarjeta_b) == no_tarejeta3){
             //printf("%s, %s, %s", balance1->nombre, balance1->no_tarjeta, balance1->transaccion);
-            fputs(balance1->nombre, fp_estado); fputs(" -> ", fp_estado);
+            fputs(balance1->nombre, fp_estado); 
+            fputs(" -> ", fp_estado);
             fputs(balance1->transaccion, fp_estado);
         }
 
     }
+    fseek(fp_balances, 0, SEEK_SET);
+    fseek(fp_estado, 0, SEEK_SET);
+    fseek(fp_info_usuario, 0, SEEK_SET);
+
+    fclose(fp_info_usuario);
     fclose(fp_balances);
-    fclose(fp_estado);  //AÑADIR EL FSEEK
+    fclose(fp_estado);  
 }
 
 
