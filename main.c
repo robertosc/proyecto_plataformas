@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include<math.h>
+#include <time.h>
 
 #define F_BALANCES "balance.csv"
 
@@ -15,6 +15,8 @@
 #define NUM_PERSONA 1
 #define LEN_PASSWD 512
 #define NUM_BALANCES 20
+
+#define LEN_TIEMPO 20
 
 #define CONTRASENA_ADMINISTRADOR "IngresoAdmin"
 
@@ -41,6 +43,29 @@ opciones_t opciones[oper_max] = {
     {.opciones = oper_salir, .texto = "Salir de mi cuenta."}
 };
 
+//FUNCIÓN PARA IMPRIMIR EL TIEMPO (IMPORTANTE HACER FREE A HORARIOS)
+char *tiempo(int opcion){
+    char *horarios = malloc(LEN_TIEMPO);
+
+    time_t fecha;
+    struct tm *tm;  //la estructura debe llamarse tm o no funciona al usarla en strftime()
+
+    fecha = time(NULL);
+
+    tm = localtime(&fecha);
+
+    if(opcion == 1){
+        strftime(horarios, 100, "%d/%m/%Y", tm);
+        return horarios;
+    }
+
+    else if (opcion == 2){
+        strftime(horarios, 100, "%l:%M:%S", tm);
+        return horarios;
+    }
+}
+
+
 
 //FUNCION CONTAR LÍNEAS
 int countlines(char*nombre_archivo){   //Se puede poner como argumento "char*filename" para hacer la función más general 
@@ -55,7 +80,7 @@ int countlines(char*nombre_archivo){   //Se puede poner como argumento "char*fil
 
     reader = getc(fp);
     while (reader != EOF){
-        if(reader == 'n'){
+        if(reader == '\n'){
             counter++;
         }
 
@@ -63,7 +88,7 @@ int countlines(char*nombre_archivo){   //Se puede poner como argumento "char*fil
     }
     rewind(fp);
     fclose(fp);
-    return counter;
+    return counter + 1;
 }
 
 //LECTURA DE TODAAS LAS TRANSACCIONES
@@ -74,7 +99,7 @@ typedef struct balance_s{
 }balance_t;
 
 int balances_todos(balance_t**tamano){
-    int num_balances = countlines(F_BALANCES) + 1;
+    int num_balances = countlines(F_BALANCES);
     balance_t balance[num_balances];
 
     //char buffer_b[len_buffer];
@@ -82,7 +107,7 @@ int balances_todos(balance_t**tamano){
 
     FILE *f_p = fopen(F_BALANCES, "r");
     //memset(buffer_b, 0, sizeof(char *len_buffer);
-    for(int i; i < NUM_BALANCES ; i++){
+    for(int i; i < num_balances ; i++){
         
         int var = fscanf(f_p, "%[^,], %[^,], %f", balance[i].nombre, balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
         
@@ -335,7 +360,7 @@ void main(void){
             break;
 
         case oper_salir:
-            printf("Gracias por preferirnos. :)");
+            printf("Gracias por preferirnos. :)\n");
             exit(0);
             break;
         }

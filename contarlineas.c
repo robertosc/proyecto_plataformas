@@ -17,7 +17,7 @@ int countlines(void){  //Se puede poner como argumento "char*filename" para hace
 
     reader = getc(fp);
     while (reader != EOF){
-        if(reader == 'n'){
+        if(reader == '\n'){
             counter++;
         }
 
@@ -25,7 +25,7 @@ int countlines(void){  //Se puede poner como argumento "char*filename" para hace
     }
     rewind(fp);
     fclose(fp);
-    return counter;
+    return counter+1; //Se debe añadir +1 porque al final no hay \n, sin no un EOF que complicaría el codigo
 }
 
 int main(){
