@@ -17,7 +17,7 @@ typedef struct usuarios_s{
     int encontrado;
 }usuarios_t;
 
-int ingreso(void){
+int ingreso(int opcion){  
     usuarios_t usuario[NUM_USUARIOS];
     char tarjeta[LEN_TARJETA];
     char pin[LEN_PIN];
@@ -51,14 +51,25 @@ int ingreso(void){
             strcpy(usuario->pin, p_pin);
             strcpy(usuario->actividad, p_actividad);
 
-            //printf("%s, %s, %s, %s", usuario->nombre, usuario->tarjeta, usuario->pin, usuario->actividad);
-
-            if(!strcmp(p_tarjeta, tarjeta) && !strcmp(p_pin, pin)){
-                printf("Ingreso exitoso. Bienvenido %s \n", usuario->nombre);
+            if(opcion == 1){
+                if(!strcmp(p_tarjeta, tarjeta) && !strcmp(p_pin, pin)){
+                    printf("Ingreso exitoso. Bienvenido %s \n", usuario->nombre);
+                    k = 0;
+                    validador = 1;
+                    no_tarjeta = atoi(p_tarjeta);
+                }
+            }
+            else if (opcion == 2){
+                printf("%s, %s, %s, %s", usuario->nombre, usuario->tarjeta, usuario->pin, usuario->actividad);
                 k = 0;
                 validador = 1;
-                no_tarjeta = atoi(p_tarjeta);
             }
+
+            else{
+                printf("Error. Opción no disponible.");
+                exit(0);
+            }
+            
         }
     if (validador==0){
         printf("ERROR. NÚMERO DE TARJETA O PIN.\n");
@@ -71,6 +82,6 @@ return no_tarjeta;
 }
 
 void main(void){
-    int k = ingreso();
+    int k = ingreso(2);
     printf("%d", k);
 }

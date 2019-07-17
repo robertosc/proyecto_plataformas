@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include <time.h>
+#include<time.h>
 
 #define F_BALANCES "balance.csv"
 
@@ -26,7 +26,7 @@ enum opciones_e{
     oper_transaccion = 2,
     oper_deposito = 3,
     oper_movimientos = 4,
-    oper_estado = 5
+    oper_estado = 5,
     oper_salir = 6,
     oper_max
 };
@@ -41,7 +41,7 @@ opciones_t opciones[oper_max] = {
     {.opciones = oper_transaccion, .texto = "Depositar o retirar dinero de mi cuenta."},
     {.opciones = oper_deposito, .texto = "Depositar dinero a alguien más."},
     {.opciones = oper_movimientos, .texto = "Mostrar mis movimientos de dinero."},
-    {.opciones = oper_estado, .texto = "Generar mi estado de cuenta."}
+    {.opciones = oper_estado, .texto = "Generar mi estado de cuenta."},
     {.opciones = oper_salir, .texto = "Salir de mi cuenta."}
 };
 
@@ -185,7 +185,7 @@ typedef struct usuarios_s{
     int encontrado;
 }usuarios_t;
 
-int ingreso(void){
+int ingreso(int opcion){  
     usuarios_t usuario[NUM_USUARIOS];
     char tarjeta[LEN_TARJETA];
     char pin[LEN_PIN];
@@ -204,6 +204,8 @@ int ingreso(void){
         printf("Ingrese su número de pin:  ");
         scanf("%s", pin);
         
+        printf("\n");
+
         while(!usuario[0].encontrado && fgets(buffer, LEN_BUFFER, fp_usuarios) != NULL){
             int j= 0;
 
@@ -217,14 +219,25 @@ int ingreso(void){
             strcpy(usuario->pin, p_pin);
             strcpy(usuario->actividad, p_actividad);
 
-            //printf("%s, %s, %s, %s", usuario->nombre, usuario->tarjeta, usuario->pin, usuario->actividad);
-
-            if(!strcmp(p_tarjeta, tarjeta) && !strcmp(p_pin, pin)){
-                printf("Ingreso exitoso. Bienvenido %s. \n\n", usuario->nombre);
+            if(opcion == 1){
+                if(!strcmp(p_tarjeta, tarjeta) && !strcmp(p_pin, pin)){
+                    printf("Ingreso exitoso. Bienvenido %s \n", usuario->nombre);
+                    k = 0;
+                    validador = 1;
+                    no_tarjeta = atoi(p_tarjeta);
+                }
+            }
+            else if (opcion == 2){
+                printf("%s, %s, %s, %s", usuario->nombre, usuario->tarjeta, usuario->pin, usuario->actividad);
                 k = 0;
                 validador = 1;
-                no_tarjeta = atoi(p_tarjeta);
             }
+
+            else{
+                printf("Error. Opción no disponible.");
+                exit(0);
+            }
+            
         }
     if (validador==0){
         printf("ERROR. NÚMERO DE TARJETA O PIN.\n");
@@ -387,6 +400,7 @@ void main(void){
     int opcion = 0;
     int ingreso_inicial = 0;
 
+
     char contrasena[LEN_PASSWD];
 
     balance_t *tamano = NULL;
@@ -401,6 +415,9 @@ void main(void){
         scanf("%s", contrasena);
 
         if(!strcmp(CONTRASENA_ADMINISTRADOR, contrasena)){
+            char *fecha = tiempo(1);
+            char *hora = tiempo(2);
+            printf("Ingreso el %s a las %s\n", fecha, hora);
             printf("Opciones de administrador:\n1. Mostrar todos los usuarios e información.\n2. Mostrar todos los movimientos.");
             int op_admin = 0;
             scanf("%d", &op_admin);
@@ -421,9 +438,11 @@ void main(void){
     }
 
     else if (ingreso_inicial == 1){
-    
-        int no_tarjeta = ingreso();
-
+        
+        int no_tarjeta = ingreso(1);
+        char *fecha = tiempo(1);
+        char *hora = tiempo(2);
+        printf("Ingreso el %s a las %s\n", fecha, hora);
         printf("Su número de tarjeta es: %d\n\n", no_tarjeta);
 
 
@@ -458,11 +477,24 @@ void main(void){
             balance(&tamano, no_tarjeta);
             break;
 
+        case oper_estado:
+            float monto = balance_total(&tamano, no_tarjeta);
+            char nombre_archivo[LEN_NOMBRE];
+
+            printf("Ingrese el nombre del archivo que desea crear -> ");
+            scanf("%s", nombre_archivo);
+
+            estado_cuenta(no_tarjeta,monto, nombre_archivo);
+
         case oper_salir:
             printf("Gracias por preferirnos. :)\n");
             exit(0);
             break;
         }
+    }
 
+    else{
+        printf("Error. Opción no disponible");
+        exit(0);
     }
 }   
