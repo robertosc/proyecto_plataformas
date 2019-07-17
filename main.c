@@ -26,7 +26,8 @@ enum opciones_e{
     oper_transaccion = 2,
     oper_deposito = 3,
     oper_movimientos = 4,
-    oper_salir = 5,
+    oper_estado = 5
+    oper_salir = 6,
     oper_max
 };
 
@@ -38,8 +39,9 @@ typedef struct opciones_s{
 opciones_t opciones[oper_max] = {
     {.opciones = oper_balance_total, .texto = "Mostrar mi balance actual."},
     {.opciones = oper_transaccion, .texto = "Depositar o retirar dinero de mi cuenta."},
-    {.opciones = oper_deposito, .texto = "Depositar dinero a alguien más"},
-    {.opciones = oper_movimientos, .texto = "Mostrar mis movimientos de dinero"},
+    {.opciones = oper_deposito, .texto = "Depositar dinero a alguien más."},
+    {.opciones = oper_movimientos, .texto = "Mostrar mis movimientos de dinero."},
+    {.opciones = oper_estado, .texto = "Generar mi estado de cuenta."}
     {.opciones = oper_salir, .texto = "Salir de mi cuenta."}
 };
 
