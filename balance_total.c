@@ -19,7 +19,8 @@ typedef struct balance_s{
 
 
 float total = 0;
-int balance_total(balance_t**tamano, int no_tarjeta1){
+
+float balance_total(balance_t**tamano, int no_tarjeta1){
     int num_balances = NUM_BALANCES;
     balance_t balance[num_balances];
 
@@ -43,6 +44,7 @@ int balance_total(balance_t**tamano, int no_tarjeta1){
     printf("%.2f", total);
     printf("\n");
     rewind(f_p);
+    return total;
 }
 
 void main(){
