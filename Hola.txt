@@ -1,0 +1,17 @@
+			Estado de cuenta.
+Emitido el día: 17/07/2019 A las:  9:46:42
+
+			Información de usuario:
+Nombre: Roberto Sanchez
+Número de tarjeta: 198763
+Estado: activo
+
+			Balances en la cuenta
+Dinero disponile en su cuenta: -72539000.000
+
+			Todos los movimmientos realidos:
+RobertoSanchez -> 1000
+RobertoSanchez -> 30000
+RobertoSanchez -> -10000
+RobertoSanchez -> 700.00
+RobertoSanchez -> 900.40

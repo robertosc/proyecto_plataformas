@@ -25,5 +25,5 @@ void movimiento(int no_tarjeta){
 }
 
 void main(void){
-    movimiento(829292);
+    movimiento(198763);
 }

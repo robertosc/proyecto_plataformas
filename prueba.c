@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include<time.h>
+#include <time.h>
 
 #define F_BALANCES "balance.csv"
 
@@ -19,37 +19,29 @@
 #define LEN_TIEMPO 20
 
 #define CONTRASENA_ADMINISTRADOR "IngresoAdmin"
-//MENU
-void menu(void){
-    enum opciones_e{
-        oper_balance_total = 1,
-        oper_transaccion = 2,
-        oper_deposito = 3,
-        oper_movimientos = 4,
-        oper_estado = 5,
-        oper_salir = 6,
-        oper_max
-    };
 
-    typedef struct opciones_s{
-        enum opciones_e opciones;
-        char *texto;
-    }opciones_t;
+//MENÚ
+enum opciones_e{
+    oper_balance_total = 1,
+    oper_transaccion = 2,
+    oper_deposito = 3,
+    oper_movimientos = 4,
+    oper_salir = 5,
+    oper_max
+};
 
-    opciones_t opciones[oper_max] = {
-        {.opciones = oper_balance_total, .texto = "Mostrar mi balance actual."},
-        {.opciones = oper_transaccion, .texto = "Depositar o retirar dinero de mi cuenta."},
-        {.opciones = oper_deposito, .texto = "Depositar dinero a alguien más."},
-        {.opciones = oper_movimientos, .texto = "Mostrar mis movimientos de dinero."},
-        {.opciones = oper_estado, .texto = "Generar mi estado de cuenta."},
-        {.opciones = oper_salir, .texto = "Salir de mi cuenta."}
-    };
-    printf("\n\tOpciones disponibles\n");
+typedef struct opciones_s{
+    enum opciones_e opciones;
+    char *texto;
+}opciones_t;
 
-    for (int i = 0; i < oper_max -1 ; i++){
-        printf("%d. %s \n", (opciones[i].opciones), opciones[i].texto);
-    }
-}
+opciones_t opciones[oper_max] = {
+    {.opciones = oper_balance_total, .texto = "Mostrar mi balance actual."},
+    {.opciones = oper_transaccion, .texto = "Depositar o retirar dinero de mi cuenta."},
+    {.opciones = oper_deposito, .texto = "Depositar dinero a alguien más"},
+    {.opciones = oper_movimientos, .texto = "Mostrar mis movimientos de dinero"},
+    {.opciones = oper_salir, .texto = "Salir de mi cuenta."}
+};
 
 //FUNCIÓN PARA IMPRIMIR EL TIEMPO (IMPORTANTE HACER FREE A HORARIOS)
 char *tiempo(int opcion){
@@ -128,7 +120,7 @@ int balances_todos(balance_t**tamano){
 
 //MOVIMIENTOS DE UN USUARIO ESPECÍFICO
 int balance(balance_t**tamano, int no_tarjeta1){
-    int num_balances = countlines(F_BALANCES);
+    int num_balances = NUM_BALANCES;
     balance_t balance[num_balances];
 
     //char buffer_b[len_buffer];
@@ -137,7 +129,7 @@ int balance(balance_t**tamano, int no_tarjeta1){
     FILE *f_p = fopen(F_BALANCES, "r");
     //memset(buffer_b, 0, sizeof(char *len_buffer);
     printf("Estos son los movimientos de su cuenta: \n");
-    for(int i; i < num_balances ; i++){
+    for(int i; i < NUM_BALANCES ; i++){
         
         int var = fscanf(f_p, "%[^,], %[^,], %f", balance[i].nombre, balance[i].no_tarjeta, &balance[i].transaccion); //& solo para int y float, ya char es un puntero
 
@@ -172,6 +164,8 @@ float balance_total(balance_t**tamano, int no_tarjeta1){
         if(atoi(balance[i].no_tarjeta) == no_tarjeta1){
             total = total + balance[i].transaccion;
         }
+
+
         //printf("%s, %.2f", balance[i].no_tarjeta, balance[i].transaccion);
     }
     //printf("%.2f", total);
@@ -179,6 +173,7 @@ float balance_total(balance_t**tamano, int no_tarjeta1){
     rewind(f_p);
     return total;
 }
+
 
 
 //FUNCION DE INGRESO
@@ -190,7 +185,7 @@ typedef struct usuarios_s{
     int encontrado;
 }usuarios_t;
 
-int ingreso(int opcion){  
+int ingreso(void){
     usuarios_t usuario[NUM_USUARIOS];
     char tarjeta[LEN_TARJETA];
     char pin[LEN_PIN];
@@ -209,8 +204,6 @@ int ingreso(int opcion){
         printf("Ingrese su número de pin:  ");
         scanf("%s", pin);
         
-        printf("\n");
-
         while(!usuario[0].encontrado && fgets(buffer, LEN_BUFFER, fp_usuarios) != NULL){
             int j= 0;
 
@@ -224,25 +217,14 @@ int ingreso(int opcion){
             strcpy(usuario->pin, p_pin);
             strcpy(usuario->actividad, p_actividad);
 
-            if(opcion == 1){
-                if(!strcmp(p_tarjeta, tarjeta) && !strcmp(p_pin, pin)){
-                    printf("Ingreso exitoso. Bienvenido %s. \n", usuario->nombre);
-                    k = 0;
-                    validador = 1;
-                    no_tarjeta = atoi(p_tarjeta);
-                }
-            }
-            else if (opcion == 2){
-                printf("%s, %s, %s, %s", usuario->nombre, usuario->tarjeta, usuario->pin, usuario->actividad);
+            //printf("%s, %s, %s, %s", usuario->nombre, usuario->tarjeta, usuario->pin, usuario->actividad);
+
+            if(!strcmp(p_tarjeta, tarjeta) && !strcmp(p_pin, pin)){
+                printf("Ingreso exitoso. Bienvenido %s. \n\n", usuario->nombre);
                 k = 0;
                 validador = 1;
+                no_tarjeta = atoi(p_tarjeta);
             }
-
-            else{
-                printf("Error. Opción no disponible.");
-                exit(0);
-            }
-            
         }
     if (validador==0){
         printf("ERROR. NÚMERO DE TARJETA O PIN.\n");
@@ -258,21 +240,18 @@ return no_tarjeta;
 //AÑADIR LÍNEAS PARA TRANSACCIONES
 void movimiento(int no_tarjeta){
     float monto = 0;
-    char nombre[30];
 
     printf("Ingrese el monto que desea mover:  ");
     scanf("%f", &monto);
-
-    printf("Ingrese su nombre sin espacios:  ");
-    scanf("%s", nombre);
 
     FILE *fp_movimientos = fopen(F_BALANCES, "a");
     
     if(fp_movimientos == NULL){
         printf("No se puede acceder al archivo. \n");
     }
+    
     else{
-        fprintf(fp_movimientos, "%s,%d,%.2f\n", nombre, no_tarjeta, monto);
+        fprintf(fp_movimientos, "%d,%f\n", no_tarjeta, monto);
     }
 }
 
@@ -305,144 +284,89 @@ void deposito(void){
     }
 }
 
-//FUNCIÓN PARA MOSTRAR ESTADOS DE CUENTA
-typedef struct balance_estado_s{
-    char nombre[LEN_NOMBRE];
-    char no_tarjeta[LEN_TARJETA];
-    char transaccion[100];    
-    int encontrado;
-}balance_est_t;
-
-int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]){
-    usuarios_t usuario[NUM_USUARIOS];
-    balance_est_t balance1[NUM_USUARIOS];
-
-    char monto_final[LEN_BUFFER];
-    char *fecha = tiempo(1);
-    char *hora = tiempo(2);
-    char buffer[LEN_BUFFER];
-    
-    FILE *fp_estado = fopen(archivo_estado, "w");
-    FILE *fp_info_usuario = fopen(F_INFO, "r");
-    FILE *fp_balances = fopen(F_BALANCES, "r");
-
-    memset(usuario, 0, sizeof(usuarios_t)* NUM_USUARIOS);
-    memset(balance1, 0, sizeof(balance_est_t)* NUM_USUARIOS);
-    memset(buffer, 0, sizeof(char)*LEN_BUFFER);
-
-    //PASAMOS BALANCE_TOTAL A STRING CON SPRINTF
-    sprintf(monto_final, "%.3f", balance_total);
-
-    //Manejo de errores
-    if((fp_estado == NULL) || (fp_info_usuario == NULL) || (fp_balances) == NULL){
-        printf("Hubo un error con los archivos, contacte con el centro de atención.");
-        exit(0);
-    }
-
-    //Lo que se va a imprimir
-    fputs("\t\t\tEstado de cuenta.\nEmitido el día: ", fp_estado);
-    fputs(fecha, fp_estado); 
-    fputs(" A las: ", fp_estado); 
-    fputs(hora, fp_estado);
-    fputs("\n\n\t\t\tInformación de usuario:\n", fp_estado);
-
-
-    while(!usuario[0].encontrado && fgets(buffer, LEN_BUFFER, fp_info_usuario) != NULL){
-
-        char *p_nombre = strtok(buffer, ",");
-        char *p_tarjeta = strtok(NULL, ",");
-        char *p_pin = strtok(NULL, ",");
-        char *p_actividad = strtok(NULL, ",");
-
-        strcpy(usuario->nombre, p_nombre);
-        strcpy(usuario->tarjeta, p_tarjeta);
-        strcpy(usuario->pin, p_pin);
-        strcpy(usuario->actividad, p_actividad);
-
-        if(atoi(p_tarjeta)== no_tarejeta3){
-            fputs("Nombre: ", fp_estado);
-            fputs(usuario->nombre, fp_estado);
-
-            fputs("\nNúmero de tarjeta: ", fp_estado);
-            fputs(usuario->tarjeta, fp_estado);
-
-            fputs("\nEstado: ", fp_estado);
-            fputs(usuario->actividad, fp_estado);
-        }
-    }
-
-    fputs("\n\t\t\tBalances en la cuenta", fp_estado);
-    fputs("\nDinero disponile en su cuenta: ", fp_estado);
-    fputs(monto_final, fp_estado);
-    
-    //PARTE MOVIMIENTOS DE DINERO, se tuvo que leer el archivo de balances porque la otra manera no funciona con fputs
-    fputs("\n\n\t\t\tTodos los movimmientos realidos:\n", fp_estado);
-    while (!balance1[0].encontrado && fgets(buffer, LEN_BUFFER, fp_balances) != NULL){
-        
-        char *p_nombre_b = strtok(buffer, ",");
-        char *p_no_tarjeta_b = strtok(NULL, ",");
-        char *p_transaccion_b = strtok(NULL, ",");
-
-        strcpy(balance1->nombre, p_nombre_b);
-        strcpy(balance1->no_tarjeta, p_no_tarjeta_b);
-        strcpy(balance1->transaccion, p_transaccion_b);
-
-        if(atoi(p_no_tarjeta_b) == no_tarejeta3){
-            //printf("%s, %s, %s", balance1->nombre, balance1->no_tarjeta, balance1->transaccion);
-            fputs(balance1->nombre, fp_estado); 
-            fputs(" -> ", fp_estado);
-            fputs(balance1->transaccion, fp_estado);
-        }
-
-    }
-    fseek(fp_balances, 0, SEEK_SET);
-    fseek(fp_estado, 0, SEEK_SET);
-    fseek(fp_info_usuario, 0, SEEK_SET);
-
-    fclose(fp_info_usuario);
-    fclose(fp_balances);
-    fclose(fp_estado);  
-}
 
 void main(void){
-    int inicializador = 1;
-    int opcion_menu = 1;
-    int opcion_usuario = 0;
+    int opcion = 0;
+    int ingreso_inicial = 0;
     float monto;
 
-    balance_t *tamano = NULL;
+    char contrasena[LEN_PASSWD];
 
-    while(1){
-        printf("Desea ingresar como:\n1. Cliente\n2. Administrador\n\nOpción -> ");
-        scanf("%d", &opcion_usuario);
-        if((opcion_usuario == 1) || (opcion_usuario == 2)){
-            break;
+    balance_t *tamano = NULL;
+    
+    printf("Desea ingresar como:\n1. Cliente\n2. Administrador\nOpción -> ");
+    scanf("%d", &ingreso_inicial);
+
+    
+
+    if(ingreso_inicial == 2){
+        printf("Ingrese la contraseña de administrador: ");
+        scanf("%s", contrasena);
+
+        if(!strcmp(CONTRASENA_ADMINISTRADOR, contrasena)){
+            printf("Opciones de administrador:\n1. Mostrar todos los usuarios e información.\n2. Mostrar todos los movimientos.");
+            int op_admin = 0;
+            scanf("%d", &op_admin);
+            switch (op_admin){
+            case 1:
+                //balances_todos(&tamano);
+                break;
+            case 2:
+                balances_todos(&tamano);
+                break;
+            case 3:
+                exit(0);
+            }
         }
         else{
-            printf("Ingrese una opción válida\n\n");
+            printf("Contraseña incorrecta");
         }
     }
 
-    if(opcion_usuario == 1){
-        int no_tarjeta = ingreso(1);
-        printf("Número de tarjeta: %d\n", no_tarjeta);
-        while(inicializador){
-            menu();
-            printf("Opción -> ");
-            scanf("%d", &opcion_menu);
-            if(opcion_menu == 1){
-                monto = balance_total(&tamano, no_tarjeta);
-                printf("Su balance total es de: %.3f\n\n", monto);
-            }
+    else if (ingreso_inicial == 1){
+    
+        int no_tarjeta = ingreso();
 
-            else if (opcion_menu == 2){
-                movimiento(no_tarjeta);
-            }
-            
+        printf("Su número de tarjeta es: %d\n\n", no_tarjeta);
 
+
+        for (int i = 0; i < oper_max -1 ; i++){
+
+            printf("%d. %s \n", (opciones[i].opciones), opciones[i].texto);
 
         }
+
+        printf("\nSeleccione qué desea hacer-> ");
+        scanf("%d", &opcion);
+
+
+        switch (opcion){
+
+        case oper_balance_total:
+            monto = balance_total(&tamano, no_tarjeta);
+            printf("%.3f", monto);
+            break;
+
+
+        case oper_transaccion:
+            printf("\nHa seleccionado la opción de realizar una transacción.\n");
+            movimiento(no_tarjeta);
+            break;
+
+        case oper_deposito:
+            printf("\nHa seleccionado la opción de realizar un depósito a alguien más. \n");
+            deposito();
+            break;
+
+        case oper_movimientos:
+            balance(&tamano, no_tarjeta);
+            break;
+
+        case oper_salir:
+            printf("Gracias por preferirnos. :)\n");
+            exit(0);
+            break;
+        }
+
     }
-
-}
-
+}   
