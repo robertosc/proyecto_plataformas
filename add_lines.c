@@ -22,6 +22,7 @@ void movimiento(int no_tarjeta){
     else{
         fprintf(fp_movimientos, "%s,%d,%.2f\n", nombre, no_tarjeta, monto);
     }
+    fclose(fp_movimientos);
 }
 
 void main(void){

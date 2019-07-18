@@ -35,6 +35,8 @@ void deposito(void){
     else{
         printf("El monto a depositar debe ser una cantidad positiva.\n");
     }
+    
+    fclose(fp_movimientos);
 }
 
 

@@ -17,8 +17,8 @@ typedef struct balance_s{
     float transaccion;
 }balance_t;
 
-float total = 0;
 
+float total = 0;
 int balance_total(balance_t**tamano, int no_tarjeta1){
     int num_balances = NUM_BALANCES;
     balance_t balance[num_balances];

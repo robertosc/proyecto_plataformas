@@ -123,6 +123,7 @@ int balances_todos(balance_t**tamano){
     }
 
     rewind(f_p);
+    fclose(f_p);
 }
 
 
@@ -150,6 +151,7 @@ int balance(balance_t**tamano, int no_tarjeta1){
     }
     printf("\n");
     rewind(f_p);
+    fclose(f_p);
 }
 
 //FUNCIÓN PARA MOSTRAR BALANCE TOTAL
@@ -177,6 +179,7 @@ float balance_total(balance_t**tamano, int no_tarjeta1){
     //printf("%.2f", total);
     printf("\n");
     rewind(f_p);
+    fclose(f_p);
     return total;
 }
 
@@ -212,7 +215,6 @@ int ingreso(int opcion){
         printf("\n");
 
         while(!usuario[0].encontrado && fgets(buffer, LEN_BUFFER, fp_usuarios) != NULL){
-            int j= 0;
 
             char *p_nombre = strtok(buffer, ",");
             char *p_tarjeta = strtok(NULL, ",");
@@ -272,8 +274,10 @@ void movimiento(int no_tarjeta){
         printf("No se puede acceder al archivo. \n");
     }
     else{
-        fprintf(fp_movimientos, "%s,%d,%.2f\n", nombre, no_tarjeta, monto);
+        fprintf(fp_movimientos, "%s,%d,%.3f\n", nombre, no_tarjeta, monto);
     }
+
+    fclose(fp_movimientos);
 }
 
 //FUNCIÓN PARA DEPOSITARLE DINERO A ALGUIEN MAS
@@ -303,6 +307,8 @@ void deposito(void){
     else{
         printf("El monto a depositar debe ser una cantidad positiva.\n");
     }
+
+    fclose(fp_movimientos);
 }
 
 //FUNCIÓN PARA MOSTRAR ESTADOS DE CUENTA
@@ -376,7 +382,7 @@ int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]
     fputs(monto_final, fp_estado);
     
     //PARTE MOVIMIENTOS DE DINERO, se tuvo que leer el archivo de balances porque la otra manera no funciona con fputs
-    fputs("\n\n\t\t\tTodos los movimmientos realidos:\n", fp_estado);
+    fputs("\n\n\t\t\tTodos los movimientos realidos:\n", fp_estado);
     while (!balance1[0].encontrado && fgets(buffer, LEN_BUFFER, fp_balances) != NULL){
         
         char *p_nombre_b = strtok(buffer, ",");
@@ -407,9 +413,12 @@ int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]
 void main(void){
     int inicializador = 1;
     int opcion_menu = 1;
+    int opcion_admin = 0;
     int opcion_usuario = 0;
-    float monto;
-
+    float monto_total, monto_estado;
+    char contrasena_admin[30];
+    char *fecha = tiempo(1);
+    char *hora = tiempo(2);
     balance_t *tamano = NULL;
 
     while(1){
@@ -426,23 +435,70 @@ void main(void){
     if(opcion_usuario == 1){
         int no_tarjeta = ingreso(1);
         printf("Número de tarjeta: %d\n", no_tarjeta);
+        printf("Ingreso el %s a las %s\n\n", fecha, hora);
         while(inicializador){
             menu();
             printf("Opción -> ");
             scanf("%d", &opcion_menu);
             if(opcion_menu == 1){
-                monto = balance_total(&tamano, no_tarjeta);
-                printf("Su balance total es de: %.3f\n\n", monto);
+                monto_total = balance_total(&tamano, no_tarjeta);
+                printf("Su balance total es de: %.3f\n\n", monto_total);
+                total = 0;
             }
 
-            else if (opcion_menu == 2){
+            else if(opcion_menu == 2){
                 movimiento(no_tarjeta);
+                printf("Su deposito se verá reflejado en el balance total cuando vuelva a entrar.\n");
             }
             
+            else if(opcion_menu == 3){
+                deposito();
+            }
 
+            else if(opcion_menu == 4){
+                balance(&tamano, no_tarjeta);
+            }
+            
+            else if(opcion_menu == 5){
+                monto_estado = balance_total(&tamano, no_tarjeta);
+                total = 0;
+                char nombre_archivo[LEN_NOMBRE];
+                printf("Ingrese el nombre del archivo en donde desea guardar su estado de cuenta -> ");
+                scanf("%s", nombre_archivo);
+                estado_cuenta(no_tarjeta, monto_estado, nombre_archivo);
+            }
 
+            else if(opcion_menu == 6){
+                printf("\n\nGracias por preferir nuestros servicios.\n");
+                inicializador = 0;
+            }
         }
     }
+    else if(opcion_usuario == 2){
+        while(strcmp(CONTRASENA_ADMINISTRADOR, contrasena_admin)){
+            printf("Ingrese la contraseña de administrador -> ");
+            scanf("%s", contrasena_admin);
+        }
+        printf("Ingreso el %s a las %s\n\n", fecha, hora);
+        printf("Opciones de administrador:\n1. Mostrar info de todos los clientes\n2. Mostrar todos los movimientos de dinero\n3. Salir\n\nOpción -> ");
+        scanf("%d", &opcion_admin);
+        while(inicializador){
+            if(opcion_admin == 1){
+                ingreso(2);
+            }
 
+            else if(opcion_admin == 2){
+                balances_todos(&tamano);
+            }
+            
+            else if(opcion_admin == 3){
+                inicializador = 0;
+            }
+
+            else{
+                printf("Error. Ingrese una opción válida.\n");
+            }
+        }
+    }
 }
 
