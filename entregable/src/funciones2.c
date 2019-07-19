@@ -122,7 +122,7 @@ void movimiento(int no_tarjeta){
     float monto = 0;
     char nombre[30];
 
-    printf("Ingrese el monto que desea mover:  ");
+    printf("Ingrese un valor positivo para depositar o negativo para retirar:  ");
     scanf("%f", &monto);
 
     printf("Ingrese su nombre sin espacios:  ");
@@ -149,7 +149,7 @@ void deposito(void){
     printf("Ingrese el número de tarjeta de la persona a la que desea depositar dinero:  ");
     scanf("%s", tarjeta);
     
-    printf("Ingrese el monto que desea depositar:  ");
+    printf("Ingrese el monto que desea depositar(Debe ser un valor positivo):  ");
     scanf("%f", &monto);
 
     printf("Ingrese su nombre sin espacios:  ");

@@ -91,7 +91,7 @@ void main(void){
         printf("Ingreso el %s a las %s\n\n", fecha, hora);
 
         while(inicializador){
-            printf("\nOpciones de administrador:\n1. Mostrar info de todos los clientes\n2. Mostrar todos los movimientos de dinero\n3. Añadir un usuario nuevo\n4. Salir\n\nIngrese número de opción -> ");
+            printf("\n\nOpciones de administrador:\n1. Mostrar info de todos los clientes\n2. Mostrar todos los movimientos de dinero\n3. Añadir un usuario nuevo\n4. Salir\n\nIngrese número de opción -> ");
             scanf("%d", &opcion_admin);
             if(opcion_admin == 1){
                 ingreso(2);
