@@ -31,7 +31,7 @@ void main(void){
     balance_t *tamano = NULL;
 
     while(1){
-        printf("Desea ingresar como:\n1. Cliente\n2. Administrador\n3. Salir\nOpción -> ");
+        printf("Desea ingresar como:\n1. Cliente\n2. Administrador\n3. Salir\nIngrese número de opción -> ");
         scanf("%d", &opcion_usuario);
         if((opcion_usuario == 1) || (opcion_usuario == 2) || (opcion_usuario == 3)){
             break;
@@ -47,7 +47,7 @@ void main(void){
         printf("Ingreso el %s a las %s\n\n", fecha, hora);
         while(inicializador){
             menu();
-            printf("Opción -> ");
+            printf("Ingrese número de opción -> ");
             scanf("%d", &opcion_menu);
             if(opcion_menu == 1){
                 monto_total = balance_total(&tamano, no_tarjeta);
@@ -91,7 +91,7 @@ void main(void){
         printf("Ingreso el %s a las %s\n\n", fecha, hora);
 
         while(inicializador){
-            printf("\nOpciones de administrador:\n1. Mostrar info de todos los clientes\n2. Mostrar todos los movimientos de dinero\n3. Añadir un usuario nuevo\n4. Salir\n\nOpción -> ");
+            printf("\nOpciones de administrador:\n1. Mostrar info de todos los clientes\n2. Mostrar todos los movimientos de dinero\n3. Añadir un usuario nuevo\n4. Salir\n\nIngrese número de opción -> ");
             scanf("%d", &opcion_admin);
             if(opcion_admin == 1){
                 ingreso(2);
