@@ -31,9 +31,9 @@ void add_user(void){
 int ingreso_admin(void){
     char tarjerta_ad[LEN_TARJETA];
     char pin[LEN_PIN];
-    printf("Ingrese su número de tarjeta -> ");
+    printf("Ingrese su número de tarjeta (admin) -> ");
     scanf("%s",tarjerta_ad);
-    printf("Ingrese su número de pin -> ");
+    printf("Ingrese su número de pin (admin) -> ");
     scanf("%s", pin);
 
     if(!strcmp(TARJETA_ADMIN, tarjerta_ad) && !strcmp(PIN_ADMIN, pin)){
