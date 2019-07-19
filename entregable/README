@@ -1,0 +1,13 @@
+El presente proyecto tiene como fin emular un cajero automático de un banco. Se desarrollo en el lenguaje de programación C e incluye todos los temas requiridos por el proyecto. 
+
+Para complilar el programa se decidió utilizar el software de cmake, que simplifica el tener muchas funciones y permite compilar solo los cambios necesarios. Se adjunta en el archivo .zip un directorio src, donde se encuentran los códigos, un directorio include que posee las cabeceras, los archivos .csv y el CMakeLists.txt, que complila el proyecto.
+
+Para compilar se utilizan los comandos:
+
+cmake .
+cmake --build .
+./cajero_automatico
+
+El programa fue desarrollado en el sistema operativo Linux, por lo que es preferible la ejecución del mismo en este sistema operativo, ya que así se evitan problemas de compatibilidad.
+
+Al correr el programa, para seleccionar una opción se debe ingresar el número de opción por medio del teclado, como entrada.
