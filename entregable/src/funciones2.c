@@ -12,16 +12,15 @@ char *tiempo(int opcion){
     struct tm *tm;  //la estructura debe llamarse tm o no funciona al usarla en strftime()
 
     fecha = time(NULL);
-
-    tm = localtime(&fecha);
+    tm = localtime(&fecha); //funcion localtime nos da las horas del sistema
 
     if(opcion == 1){
-        strftime(horarios, 100, "%d/%m/%Y", tm);
+        strftime(horarios, 100, "%d/%m/%Y", tm); //strftime propias de c para fechas y horarios
         return horarios;
     }
 
     else if (opcion == 2){
-        strftime(horarios, 100, "%l:%M:%S", tm);
+        strftime(horarios, 100, "%H:%M:%S", tm);  //Nos da la hora en formato 24h
         return horarios;
     }
 }
@@ -42,13 +41,13 @@ int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]
 
     memset(usuario, 0, sizeof(usuarios_t)* NUM_USUARIOS);
     memset(balance1, 0, sizeof(balance_est_t)* NUM_USUARIOS);
-    memset(buffer, 0, sizeof(char)*LEN_BUFFER);
+    memset(buffer, 0, sizeof(char)*LEN_BUFFER); //Se debe inicializar la memoria en 0 para asegurarnos que este vacio
 
     //PASAMOS BALANCE_TOTAL A STRING CON SPRINTF
     sprintf(monto_final, "%.3f", balance_total);
 
     //Manejo de errores
-    if((fp_estado == NULL) || (fp_info_usuario == NULL) || (fp_balances) == NULL){
+    if((fp_estado == NULL) || (fp_info_usuario == NULL) || (fp_balances) == NULL){ //manejo de errores
         printf("Hubo un error con los archivos, contacte con el centro de atención.");
         exit(0);
     }
@@ -66,15 +65,15 @@ int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]
         char *p_nombre = strtok(buffer, ",");
         char *p_tarjeta = strtok(NULL, ",");
         char *p_pin = strtok(NULL, ",");
-        char *p_actividad = strtok(NULL, ",");
+        char *p_actividad = strtok(NULL, ",");  //Se usa strtok para mover los buffer desde un punto del string a otro
 
-        strcpy(usuario->nombre, p_nombre);
+        strcpy(usuario->nombre, p_nombre); //Se deben copiar de manera que queden en memoria y se puedan usar posteriormente
         strcpy(usuario->tarjeta, p_tarjeta);
         strcpy(usuario->pin, p_pin);
         strcpy(usuario->actividad, p_actividad);
 
-        if(atoi(p_tarjeta)== no_tarejeta3){
-            fputs("Nombre: ", fp_estado);
+        if(atoi(p_tarjeta)== no_tarejeta3){ //Si la tarjeta coincide, usamos fputs para copiar el contenido del puntero
+            fputs("Nombre: ", fp_estado);   //en el archivo
             fputs(usuario->nombre, fp_estado);
 
             fputs("\nNúmero de tarjeta: ", fp_estado);

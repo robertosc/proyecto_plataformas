@@ -10,6 +10,8 @@
 #define NUM_BALANCES 20
 #define LEN_TIEMPO 20
 #define CONTRASENA_ADMINISTRADOR "IngresoAdmin"
+#define TARJETA_ADMIN "666666"
+#define PIN_ADMIN "6666"
 
 typedef struct balance_s{
     char nombre[30];
@@ -25,7 +27,6 @@ typedef struct usuarios_s{
     char actividad[30];
     int encontrado;
 }usuarios_t;
-
 
 typedef struct balance_estado_s{
     char nombre[LEN_NOMBRE];

@@ -99,7 +99,7 @@ int countlines(char*nombre_archivo){   //Se puede poner como argumento "char*fil
     return counter + 1;
 }
 
-//LECTURA DE TODAAS LAS TRANSACCIONES
+//LECTURA DE TODAAS LAS TRANSACCIONES (NO SIRVE CUANDO SE IMPLEMENTA EN EL MAIN)
 typedef struct balance_s{
     char nombre[30];
     char no_tarjeta[30];
@@ -145,7 +145,6 @@ int balance(balance_t**tamano, int no_tarjeta1){
         if(atoi(balance[i].no_tarjeta) == no_tarjeta1){
             printf("%s -> %.2f", balance[i].nombre, balance[i].transaccion);
         }
-
 
         //printf("%s, %.2f", balance[i].no_tarjeta, balance[i].transaccion);
     }
@@ -408,9 +407,47 @@ int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]
     fclose(fp_info_usuario);
     fclose(fp_balances);
     fclose(fp_estado);  
-}
+}   
+
+void estados_todos(void){
+    balance_est_t balance1[NUM_USUARIOS];
+    char monto_final[LEN_BUFFER];
+    char buffer[LEN_BUFFER];
+
+    FILE *fp_balances = fopen(F_BALANCES, "r");
+
+    memset(balance1, 0, sizeof(balance_est_t)* NUM_USUARIOS);
+    memset(buffer, 0, sizeof(char)*LEN_BUFFER);
+
+    //Manejo de errores
+    if((fp_balances) == NULL){
+        printf("Hubo un error con los archivos, contacte con el centro de atención.");
+        exit(0);
+    }
+
+    //Lo que se va a imprimir
+    while (!balance1[0].encontrado && fgets(buffer, LEN_BUFFER, fp_balances) != NULL){
+        char *p_nombre_b = strtok(buffer, ",");
+        char *p_no_tarjeta_b = strtok(NULL, ",");
+        char *p_transaccion_b = strtok(NULL, ",");
+
+        strcpy(balance1->nombre, p_nombre_b);
+        strcpy(balance1->no_tarjeta, p_no_tarjeta_b);
+        strcpy(balance1->transaccion, p_transaccion_b);
+        printf("%s, %s, %s", balance1->nombre, balance1->no_tarjeta, balance1->transaccion);
+
+    }
+    fseek(fp_balances, 0, SEEK_SET);
+
+    fclose(fp_balances);  
+} 
+
+
+
+
 
 void main(void){
+    balance_t *tamano = NULL;
     int inicializador = 1;
     int opcion_menu = 1;
     int opcion_admin = 0;
@@ -419,7 +456,6 @@ void main(void){
     char contrasena_admin[30];
     char *fecha = tiempo(1);
     char *hora = tiempo(2);
-    balance_t *tamano = NULL;
 
     while(1){
         printf("Desea ingresar como:\n1. Cliente\n2. Administrador\n\nOpción -> ");
@@ -482,23 +518,22 @@ void main(void){
         printf("Ingreso el %s a las %s\n\n", fecha, hora);
         printf("Opciones de administrador:\n1. Mostrar info de todos los clientes\n2. Mostrar todos los movimientos de dinero\n3. Salir\n\nOpción -> ");
         scanf("%d", &opcion_admin);
-        while(inicializador){
-            if(opcion_admin == 1){
-                ingreso(2);
-            }
-
-            else if(opcion_admin == 2){
-                balances_todos(&tamano);
-            }
-            
-            else if(opcion_admin == 3){
-                inicializador = 0;
-            }
-
-            else{
-                printf("Error. Ingrese una opción válida.\n");
-            }
+        if(opcion_admin == 1){
+            ingreso(2);
         }
+
+        else if(opcion_admin == 2){
+            estados_todos();
+        }
+        
+        else if(opcion_admin == 3){
+            exit(0);
+        }
+
+        else{
+            printf("Error. Ingrese una opción válida.\n");
+        }
+        
     }
 }
 

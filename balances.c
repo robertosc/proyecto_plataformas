@@ -40,7 +40,7 @@ int countlines(void){  //Se puede poner como argumento "char*filename" para hace
 }
 
 int balances_todos(balance_t**tamano){  //HACER CAMBIOS EN EL MAIN
-    int num_balances = countlines();
+    int num_balances = countlines()-1;
     balance_t balance[num_balances];
 
     //char buffer_b[len_buffer];
@@ -56,11 +56,12 @@ int balances_todos(balance_t**tamano){  //HACER CAMBIOS EN EL MAIN
     }
 
     rewind(f_p);
+    fclose(f_p);
 }
 
 void main(){
-    balance_t *tamano = NULL;
-    balances_todos(&tamano);
+    balance_t *tamano1 = NULL;
+    balances_todos(&tamano1);
 }
 
 

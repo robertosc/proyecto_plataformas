@@ -6,16 +6,18 @@
 
 int ingreso(int opcion);
 int countlines(char*nombre_archivo);
-int balances_todos(balance_t**tamano);
+void estados_todos(void);
 int balance(balance_t**tamano, int no_tarjeta1);
-int balance_total(balance_t**tamano, int no_tarjeta1);
+float balance_total(balance_t**tamano, int no_tarjeta1);
 int estado_cuenta(int no_tarejeta3, float balance_total, char archivo_estado[30]);
 void movimiento(int no_tarjeta);
 void deposito(void);
 char *tiempo(int opcion); //Opción 1 fecha, 2 hora
 void menu(void);
+void total_cero(void);
+void add_user(void);
+int ingreso_admin(void);
 
-float total;
 
 void main(void){
     int inicializador = 1;
@@ -29,9 +31,9 @@ void main(void){
     balance_t *tamano = NULL;
 
     while(1){
-        printf("Desea ingresar como:\n1. Cliente\n2. Administrador\n\nOpción -> ");
+        printf("Desea ingresar como:\n1. Cliente\n2. Administrador\n3. Salir\nOpción -> ");
         scanf("%d", &opcion_usuario);
-        if((opcion_usuario == 1) || (opcion_usuario == 2)){
+        if((opcion_usuario == 1) || (opcion_usuario == 2) || (opcion_usuario == 3)){
             break;
         }
         else{
@@ -50,7 +52,7 @@ void main(void){
             if(opcion_menu == 1){
                 monto_total = balance_total(&tamano, no_tarjeta);
                 printf("Su balance total es de: %.3f\n\n", monto_total);
-                total = 0;
+                total_cero();
             }
 
             else if(opcion_menu == 2){
@@ -68,7 +70,7 @@ void main(void){
             
             else if(opcion_menu == 5){
                 monto_estado = balance_total(&tamano, no_tarjeta);
-                total = 0;
+                total_cero();
                 char nombre_archivo[LEN_NOMBRE];
                 printf("Ingrese el nombre del archivo en donde desea guardar su estado de cuenta -> ");
                 scanf("%s", nombre_archivo);
@@ -87,18 +89,38 @@ void main(void){
             scanf("%s", contrasena_admin);
         }
         printf("Ingreso el %s a las %s\n\n", fecha, hora);
-        printf("Opciones de administrador:\n1. Mostrar info de todos los clientes\n2. Mostrar todos los movimientos de dinero\n3. Salir\n\nOpción -> ");
-        scanf("%d", &opcion_admin);
+
         while(inicializador){
+            printf("\nOpciones de administrador:\n1. Mostrar info de todos los clientes\n2. Mostrar todos los movimientos de dinero\n3. Añadir un usuario nuevo\n4. Salir\n\nOpción -> ");
+            scanf("%d", &opcion_admin);
             if(opcion_admin == 1){
                 ingreso(2);
+                //inicializador=0;
+                //exit(0);
             }
 
             else if(opcion_admin == 2){
-                balances_todos(&tamano);
+                int seguridad = ingreso_admin();
+                if(seguridad == 1){
+                    printf("Información de todos los estados\n\n");
+                    estados_todos();
+                }
+                else{
+                    printf("Error. Contraseña o pin incorrectos.");
+                }
+            }
+            else if (opcion_admin == 3){
+                int seguridad2 = ingreso_admin();
+                if(seguridad2 == 1){
+                    printf("Ha seleccionado añadir un nuevo usuario.\n");
+                    add_user();
+                }
+                else{
+                    printf("Error. Contraseña o pin incorrectos.");
+                }
             }
             
-            else if(opcion_admin == 3){
+            else if(opcion_admin == 4){
                 inicializador = 0;
             }
 
@@ -106,5 +128,9 @@ void main(void){
                 printf("Error. Ingrese una opción válida.\n");
             }
         }
+    }
+    else if (opcion_usuario == 3){
+        printf("Gracias por preferirnos.\n");
+        exit(0);
     }
 }
